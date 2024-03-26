@@ -13,7 +13,7 @@ func TestUserServiceHandlers(t *testing.T) {
 	userStore := &mockUserStore{}
 	handler := NewHandler(userStore)
 
-	t.Run("should fail if the user ID is not a number", func(t *testing.T) {
+	t.Run("should fail if the user Id is not a number", func(t *testing.T) {
 		req, err := http.NewRequest(http.MethodGet, "/user/abc", nil)
 		if err != nil {
 			t.Fatal(err)
@@ -22,7 +22,7 @@ func TestUserServiceHandlers(t *testing.T) {
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
 
-		router.HandleFunc("/user/{userID}", handler.handleGetUser).Methods(http.MethodGet)
+		router.HandleFunc("/user/{userId}", handler.handleGetUser).Methods(http.MethodGet)
 
 		router.ServeHTTP(rr, req)
 
@@ -31,7 +31,7 @@ func TestUserServiceHandlers(t *testing.T) {
 		}
 	})
 
-	t.Run("should handle get user by ID", func(t *testing.T) {
+	t.Run("should handle get user by Id", func(t *testing.T) {
 		req, err := http.NewRequest(http.MethodGet, "/user/42", nil)
 		if err != nil {
 			t.Fatal(err)
@@ -40,7 +40,7 @@ func TestUserServiceHandlers(t *testing.T) {
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
 
-		router.HandleFunc("/user/{userID}", handler.handleGetUser).Methods(http.MethodGet)
+		router.HandleFunc("/user/{userId}", handler.handleGetUser).Methods(http.MethodGet)
 
 		router.ServeHTTP(rr, req)
 
@@ -64,6 +64,6 @@ func (m *mockUserStore) CreateUser(u types.User) (int64, error) {
 	return 0, nil
 }
 
-func (m *mockUserStore) GetUserByID(id int) (*types.User, error) {
+func (m *mockUserStore) GetUserById(id int) (*types.User, error) {
 	return &types.User{}, nil
 }

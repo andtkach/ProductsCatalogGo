@@ -26,7 +26,7 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/register", h.handleRegister).Methods("POST")
 
 	// admin routes
-	router.HandleFunc("/users/{userID}", auth.WithJWTAuth(h.handleGetUser, h.store)).Methods(http.MethodGet)
+	router.HandleFunc("/users/{userId}", auth.WithJWTAuth(h.handleGetUser, h.store)).Methods(http.MethodGet)
 }
 
 func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
@@ -48,13 +48,18 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if u.Active == false {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("not active, invalid email or password"))
+		return
+	}
+
 	if !auth.ComparePasswords(u.Password, []byte(user.Password)) {
 		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid email or password"))
 		return
 	}
 
 	secret := []byte(configs.Envs.JWTSecret)
-	token, err := auth.CreateJWT(secret, u.ID)
+	token, err := auth.CreateJWT(secret, u.Id)
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
@@ -102,7 +107,7 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userResult := types.RegisterUserResult{
-		ID:    id,
+		Id:    id,
 		Email: user.Email,
 	}
 
@@ -111,19 +116,19 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) handleGetUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	str, ok := vars["userID"]
+	str, ok := vars["userId"]
 	if !ok {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("missing user ID"))
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("missing user Id"))
 		return
 	}
 
-	userID, err := strconv.Atoi(str)
+	userId, err := strconv.Atoi(str)
 	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid user ID"))
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid user Id"))
 		return
 	}
 
-	user, err := h.store.GetUserByID(userID)
+	user, err := h.store.GetUserById(userId)
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return

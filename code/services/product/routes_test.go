@@ -34,7 +34,7 @@ func TestProductServiceHandlers(t *testing.T) {
 		}
 	})
 
-	t.Run("should fail if the product ID is not a number", func(t *testing.T) {
+	t.Run("should fail if the product Id is not a number", func(t *testing.T) {
 		req, err := http.NewRequest(http.MethodGet, "/products/abc", nil)
 		if err != nil {
 			t.Fatal(err)
@@ -43,7 +43,7 @@ func TestProductServiceHandlers(t *testing.T) {
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
 
-		router.HandleFunc("/products/{productID}", handler.handleGetProduct).Methods(http.MethodGet)
+		router.HandleFunc("/products/{productId}", handler.handleGetProduct).Methods(http.MethodGet)
 
 		router.ServeHTTP(rr, req)
 
@@ -52,7 +52,7 @@ func TestProductServiceHandlers(t *testing.T) {
 		}
 	})
 
-	t.Run("should handle get product by ID", func(t *testing.T) {
+	t.Run("should handle get product by Id", func(t *testing.T) {
 		req, err := http.NewRequest(http.MethodGet, "/products/42", nil)
 		if err != nil {
 			t.Fatal(err)
@@ -61,7 +61,7 @@ func TestProductServiceHandlers(t *testing.T) {
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
 
-		router.HandleFunc("/products/{productID}", handler.handleGetProduct).Methods(http.MethodGet)
+		router.HandleFunc("/products/{productId}", handler.handleGetProduct).Methods(http.MethodGet)
 
 		router.ServeHTTP(rr, req)
 
@@ -122,7 +122,7 @@ func TestProductServiceHandlers(t *testing.T) {
 
 type mockProductStore struct{}
 
-func (m *mockProductStore) GetProductByID(productID int) (*types.Product, error) {
+func (m *mockProductStore) GetProductById(productId int) (*types.Product, error) {
 	return &types.Product{}, nil
 }
 
@@ -138,13 +138,13 @@ func (m *mockProductStore) UpdateProduct(product types.Product) error {
 	return nil
 }
 
-func (m *mockProductStore) GetProductsByID(ids []int) ([]types.Product, error) {
+func (m *mockProductStore) GetProductsById(ids []int) ([]types.Product, error) {
 	return []types.Product{}, nil
 }
 
 type mockUserStore struct{}
 
-func (m *mockUserStore) GetUserByID(userID int) (*types.User, error) {
+func (m *mockUserStore) GetUserById(userId int) (*types.User, error) {
 	return &types.User{}, nil
 }
 

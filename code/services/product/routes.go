@@ -23,7 +23,7 @@ func NewHandler(store types.ProductStore, userStore types.UserStore) *Handler {
 
 func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/products", h.handleGetProducts).Methods(http.MethodGet)
-	router.HandleFunc("/products/{productID}", h.handleGetProduct).Methods(http.MethodGet)
+	router.HandleFunc("/products/{productId}", h.handleGetProduct).Methods(http.MethodGet)
 
 	// admin routes
 	router.HandleFunc("/products", auth.WithJWTAuth(h.handleCreateProduct, h.userStore)).Methods(http.MethodPost)
@@ -41,19 +41,19 @@ func (h *Handler) handleGetProducts(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) handleGetProduct(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	str, ok := vars["productID"]
+	str, ok := vars["productId"]
 	if !ok {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("missing product ID"))
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("missing product Id"))
 		return
 	}
 
-	productID, err := strconv.Atoi(str)
+	productId, err := strconv.Atoi(str)
 	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid product ID"))
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid product Id"))
 		return
 	}
 
-	product, err := h.store.GetProductByID(productID)
+	product, err := h.store.GetProductById(productId)
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return

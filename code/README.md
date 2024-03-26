@@ -3,6 +3,10 @@
 ### Installation
 
 ```bash
+make docker-up-db
+```
+
+```bash
 make migrate-up
 ```
 

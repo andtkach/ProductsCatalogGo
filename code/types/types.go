@@ -5,34 +5,34 @@ import (
 )
 
 type User struct {
-	ID        int       `json:"id"`
+	Id        int       `json:"id"`
 	FirstName string    `json:"firstName"`
 	LastName  string    `json:"lastName"`
 	Email     string    `json:"email"`
 	Password  string    `json:"-"`
 	CreatedAt time.Time `json:"createdAt"`
+	Active    bool      `json:"active"`
+	Role      string    `json:"role"`
 }
 
 type Product struct {
-	ID          int     `json:"id"`
-	Name        string  `json:"name"`
-	Description string  `json:"description"`
-	Image       string  `json:"image"`
-	Price       float64 `json:"price"`
-	// note that this isn't the best way to handle quantity
-	// because it's not atomic (in ACID), but it's good enough for this example
-	Quantity  int       `json:"quantity"`
-	CreatedAt time.Time `json:"createdAt"`
+	Id          int       `json:"id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Image       string    `json:"image"`
+	Price       float64   `json:"price"`
+	Quantity    int       `json:"quantity"`
+	CreatedAt   time.Time `json:"createdAt"`
 }
 
 type CartCheckoutItem struct {
-	ProductID int `json:"productID"`
+	ProductId int `json:"productId"`
 	Quantity  int `json:"quantity"`
 }
 
 type Order struct {
-	ID        int       `json:"id"`
-	UserID    int       `json:"userID"`
+	Id        int       `json:"id"`
+	UserId    int       `json:"userId"`
 	Total     float64   `json:"total"`
 	Status    string    `json:"status"`
 	Address   string    `json:"address"`
@@ -40,9 +40,9 @@ type Order struct {
 }
 
 type OrderItem struct {
-	ID        int       `json:"id"`
-	OrderID   int       `json:"orderID"`
-	ProductID int       `json:"productID"`
+	Id        int       `json:"id"`
+	OrderId   int       `json:"orderId"`
+	ProductId int       `json:"productId"`
 	Quantity  int       `json:"quantity"`
 	Price     float64   `json:"price"`
 	CreatedAt time.Time `json:"createdAt"`
@@ -50,13 +50,13 @@ type OrderItem struct {
 
 type UserStore interface {
 	GetUserByEmail(email string) (*User, error)
-	GetUserByID(id int) (*User, error)
+	GetUserById(id int) (*User, error)
 	CreateUser(User) (int64, error)
 }
 
 type ProductStore interface {
-	GetProductByID(id int) (*Product, error)
-	GetProductsByID(ids []int) ([]Product, error)
+	GetProductById(id int) (*Product, error)
+	GetProductsById(ids []int) ([]Product, error)
 	GetProducts() ([]*Product, error)
 	CreateProduct(CreateProductPayload) error
 	UpdateProduct(Product) error
@@ -91,6 +91,6 @@ type CartCheckoutPayload struct {
 }
 
 type RegisterUserResult struct {
-	ID    int64  `json:"id"`
+	Id    int64  `json:"id"`
 	Email string `json:"email"`
 }

@@ -12,11 +12,11 @@ import (
 )
 
 var mockProducts = []types.Product{
-	{ID: 1, Name: "product 1", Price: 10, Quantity: 100},
-	{ID: 2, Name: "product 2", Price: 20, Quantity: 200},
-	{ID: 3, Name: "product 3", Price: 30, Quantity: 300},
-	{ID: 4, Name: "empty stock", Price: 30, Quantity: 0},
-	{ID: 5, Name: "almost stock", Price: 30, Quantity: 1},
+	{Id: 1, Name: "product 1", Price: 10, Quantity: 100},
+	{Id: 2, Name: "product 2", Price: 20, Quantity: 200},
+	{Id: 3, Name: "product 3", Price: 30, Quantity: 300},
+	{Id: 4, Name: "empty stock", Price: 30, Quantity: 0},
+	{Id: 5, Name: "almost stock", Price: 30, Quantity: 1},
 }
 
 func TestCartServiceHandler(t *testing.T) {
@@ -27,7 +27,7 @@ func TestCartServiceHandler(t *testing.T) {
 	t.Run("should fail to checkout if the cart items do not exist", func(t *testing.T) {
 		payload := types.CartCheckoutPayload{
 			Items: []types.CartCheckoutItem{
-				{ProductID: 99, Quantity: 100},
+				{ProductId: 99, Quantity: 100},
 			},
 		}
 
@@ -56,7 +56,7 @@ func TestCartServiceHandler(t *testing.T) {
 	t.Run("should fail to checkout if the cart has negative quantities", func(t *testing.T) {
 		payload := types.CartCheckoutPayload{
 			Items: []types.CartCheckoutItem{
-				{ProductID: 1, Quantity: 0}, // invalid quantity
+				{ProductId: 1, Quantity: 0}, // invalid quantity
 			},
 		}
 
@@ -85,7 +85,7 @@ func TestCartServiceHandler(t *testing.T) {
 	t.Run("should fail to checkout if there is no stock for an item", func(t *testing.T) {
 		payload := types.CartCheckoutPayload{
 			Items: []types.CartCheckoutItem{
-				{ProductID: 4, Quantity: 2},
+				{ProductId: 4, Quantity: 2},
 			},
 		}
 
@@ -114,7 +114,7 @@ func TestCartServiceHandler(t *testing.T) {
 	t.Run("should fail to checkout if there is not enough stock", func(t *testing.T) {
 		payload := types.CartCheckoutPayload{
 			Items: []types.CartCheckoutItem{
-				{ProductID: 5, Quantity: 2},
+				{ProductId: 5, Quantity: 2},
 			},
 		}
 
@@ -143,9 +143,9 @@ func TestCartServiceHandler(t *testing.T) {
 	t.Run("should checkout and calculate the price correctly", func(t *testing.T) {
 		payload := types.CartCheckoutPayload{
 			Items: []types.CartCheckoutItem{
-				{ProductID: 1, Quantity: 10},
-				{ProductID: 2, Quantity: 20},
-				{ProductID: 5, Quantity: 1},
+				{ProductId: 1, Quantity: 10},
+				{ProductId: 2, Quantity: 20},
+				{ProductId: 5, Quantity: 1},
 			},
 		}
 
@@ -183,7 +183,7 @@ func TestCartServiceHandler(t *testing.T) {
 
 type mockProductStore struct{}
 
-func (m *mockProductStore) GetProductByID(productID int) (*types.Product, error) {
+func (m *mockProductStore) GetProductById(productId int) (*types.Product, error) {
 	return &types.Product{}, nil
 }
 
@@ -195,7 +195,7 @@ func (m *mockProductStore) CreateProduct(product types.CreateProductPayload) err
 	return nil
 }
 
-func (m *mockProductStore) GetProductsByID(ids []int) ([]types.Product, error) {
+func (m *mockProductStore) GetProductsById(ids []int) ([]types.Product, error) {
 	return mockProducts, nil
 }
 

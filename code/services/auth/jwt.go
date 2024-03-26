@@ -16,7 +16,7 @@ import (
 
 type contextKey string
 
-const UserKey contextKey = "userID"
+const UserKey contextKey = "userId"
 
 func WithJWTAuth(handlerFunc http.HandlerFunc, store types.UserStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -36,16 +36,16 @@ func WithJWTAuth(handlerFunc http.HandlerFunc, store types.UserStore) http.Handl
 		}
 
 		claims := token.Claims.(jwt.MapClaims)
-		str := claims["userID"].(string)
+		str := claims["userId"].(string)
 
-		userID, err := strconv.Atoi(str)
+		userId, err := strconv.Atoi(str)
 		if err != nil {
-			log.Printf("failed to convert userID to int: %v", err)
+			log.Printf("failed to convert userId to int: %v", err)
 			permissionDenied(w)
 			return
 		}
 
-		u, err := store.GetUserByID(userID)
+		u, err := store.GetUserById(userId)
 		if err != nil {
 			log.Printf("failed to get user by id: %v", err)
 			permissionDenied(w)
@@ -54,7 +54,7 @@ func WithJWTAuth(handlerFunc http.HandlerFunc, store types.UserStore) http.Handl
 
 		// Add the user to the context
 		ctx := r.Context()
-		ctx = context.WithValue(ctx, UserKey, u.ID)
+		ctx = context.WithValue(ctx, UserKey, u.Id)
 		r = r.WithContext(ctx)
 
 		// Call the function if the token is valid
@@ -62,11 +62,11 @@ func WithJWTAuth(handlerFunc http.HandlerFunc, store types.UserStore) http.Handl
 	}
 }
 
-func CreateJWT(secret []byte, userID int) (string, error) {
+func CreateJWT(secret []byte, userId int) (string, error) {
 	expiration := time.Second * time.Duration(configs.Envs.JWTExpirationInSeconds)
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"userID":    strconv.Itoa(int(userID)),
+		"userId":    strconv.Itoa(int(userId)),
 		"expiresAt": time.Now().Add(expiration).Unix(),
 	})
 
@@ -92,11 +92,11 @@ func permissionDenied(w http.ResponseWriter) {
 	utils.WriteError(w, http.StatusForbidden, fmt.Errorf("permission denied"))
 }
 
-func GetUserIDFromContext(ctx context.Context) int {
-	userID, ok := ctx.Value(UserKey).(int)
+func GetUserIdFromContext(ctx context.Context) int {
+	userId, ok := ctx.Value(UserKey).(int)
 	if !ok {
 		return -1
 	}
 
-	return userID
+	return userId
 }

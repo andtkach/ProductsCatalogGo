@@ -34,7 +34,7 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 }
 
 func (h *Handler) handleCheckout(w http.ResponseWriter, r *http.Request) {
-	userID := auth.GetUserIDFromContext(r.Context())
+	userId := auth.GetUserIdFromContext(r.Context())
 
 	var cart types.CartCheckoutPayload
 	if err := utils.ParseJSON(r, &cart); err != nil {
@@ -48,20 +48,20 @@ func (h *Handler) handleCheckout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	productIds, err := getCartItemsIDs(cart.Items)
+	productIds, err := getCartItemsIds(cart.Items)
 	if err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return
 	}
 
 	// get products
-	products, err := h.store.GetProductsByID(productIds)
+	products, err := h.store.GetProductsById(productIds)
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	orderID, totalPrice, err := h.createOrder(products, cart.Items, userID)
+	orderId, totalPrice, err := h.createOrder(products, cart.Items, userId)
 	if err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return
@@ -69,6 +69,6 @@ func (h *Handler) handleCheckout(w http.ResponseWriter, r *http.Request) {
 
 	utils.WriteJSON(w, http.StatusOK, map[string]interface{}{
 		"total_price": totalPrice,
-		"order_id":    orderID,
+		"order_id":    orderId,
 	})
 }

@@ -16,8 +16,8 @@ func NewStore(db *sql.DB) *Store {
 	return &Store{db: db}
 }
 
-func (s *Store) GetProductByID(productID int) (*types.Product, error) {
-	rows, err := s.db.Query("SELECT * FROM products WHERE id = ?", productID)
+func (s *Store) GetProductById(productId int) (*types.Product, error) {
+	rows, err := s.db.Query("SELECT * FROM products WHERE id = ?", productId)
 	if err != nil {
 		return nil, err
 	}
@@ -33,13 +33,13 @@ func (s *Store) GetProductByID(productID int) (*types.Product, error) {
 	return p, nil
 }
 
-func (s *Store) GetProductsByID(productIDs []int) ([]types.Product, error) {
-	placeholders := strings.Repeat(",?", len(productIDs)-1)
+func (s *Store) GetProductsById(productIds []int) ([]types.Product, error) {
+	placeholders := strings.Repeat(",?", len(productIds)-1)
 	query := fmt.Sprintf("SELECT * FROM products WHERE id IN (?%s)", placeholders)
 
-	// Convert productIDs to []interface{}
-	args := make([]interface{}, len(productIDs))
-	for i, v := range productIDs {
+	// Convert productIds to []interface{}
+	args := make([]interface{}, len(productIds))
+	for i, v := range productIds {
 		args[i] = v
 	}
 
@@ -91,7 +91,7 @@ func (s *Store) CreateProduct(product types.CreateProductPayload) error {
 }
 
 func (s *Store) UpdateProduct(product types.Product) error {
-	_, err := s.db.Exec("UPDATE products SET name = ?, price = ?, image = ?, description = ?, quantity = ? WHERE id = ?", product.Name, product.Price, product.Image, product.Description, product.Quantity, product.ID)
+	_, err := s.db.Exec("UPDATE products SET name = ?, price = ?, image = ?, description = ?, quantity = ? WHERE id = ?", product.Name, product.Price, product.Image, product.Description, product.Quantity, product.Id)
 	if err != nil {
 		return err
 	}
@@ -103,7 +103,7 @@ func scanRowsIntoProduct(rows *sql.Rows) (*types.Product, error) {
 	product := new(types.Product)
 
 	err := rows.Scan(
-		&product.ID,
+		&product.Id,
 		&product.Name,
 		&product.Description,
 		&product.Image,

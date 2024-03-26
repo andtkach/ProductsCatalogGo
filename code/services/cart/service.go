@@ -6,14 +6,14 @@ import (
 	"github.com/andtkach/productscataloggo/types"
 )
 
-func getCartItemsIDs(items []types.CartCheckoutItem) ([]int, error) {
+func getCartItemsIds(items []types.CartCheckoutItem) ([]int, error) {
 	productIds := make([]int, len(items))
 	for i, item := range items {
 		if item.Quantity <= 0 {
-			return nil, fmt.Errorf("invalid quantity for product %d", item.ProductID)
+			return nil, fmt.Errorf("invalid quantity for product %d", item.ProductId)
 		}
 
-		productIds[i] = item.ProductID
+		productIds[i] = item.ProductId
 	}
 
 	return productIds, nil
@@ -25,9 +25,9 @@ func checkIfCartIsInStock(cartItems []types.CartCheckoutItem, products map[int]t
 	}
 
 	for _, item := range cartItems {
-		product, ok := products[item.ProductID]
+		product, ok := products[item.ProductId]
 		if !ok {
-			return fmt.Errorf("product %d is not available in the store, please refresh your cart", item.ProductID)
+			return fmt.Errorf("product %d is not available in the store, please refresh your cart", item.ProductId)
 		}
 
 		if product.Quantity < item.Quantity {
@@ -42,18 +42,18 @@ func calculateTotalPrice(cartItems []types.CartCheckoutItem, products map[int]ty
 	var total float64
 
 	for _, item := range cartItems {
-		product := products[item.ProductID]
+		product := products[item.ProductId]
 		total += product.Price * float64(item.Quantity)
 	}
 
 	return total
 }
 
-func (h *Handler) createOrder(products []types.Product, cartItems []types.CartCheckoutItem, userID int) (int, float64, error) {
+func (h *Handler) createOrder(products []types.Product, cartItems []types.CartCheckoutItem, userId int) (int, float64, error) {
 	// create a map of products for easier access
 	productsMap := make(map[int]types.Product)
 	for _, product := range products {
-		productsMap[product.ID] = product
+		productsMap[product.Id] = product
 	}
 
 	// check if all products are available
@@ -66,14 +66,14 @@ func (h *Handler) createOrder(products []types.Product, cartItems []types.CartCh
 
 	// reduce the quantity of products in the store
 	for _, item := range cartItems {
-		product := productsMap[item.ProductID]
+		product := productsMap[item.ProductId]
 		product.Quantity -= item.Quantity
 		h.store.UpdateProduct(product)
 	}
 
 	// create order record
-	orderID, err := h.orderStore.CreateOrder(types.Order{
-		UserID:  userID,
+	orderId, err := h.orderStore.CreateOrder(types.Order{
+		UserId:  userId,
 		Total:   totalPrice,
 		Status:  "pending",
 		Address: "some address", // could fetch address from a user addresses table
@@ -85,12 +85,12 @@ func (h *Handler) createOrder(products []types.Product, cartItems []types.CartCh
 	// create order the items records
 	for _, item := range cartItems {
 		h.orderStore.CreateOrderItem(types.OrderItem{
-			OrderID:   orderID,
-			ProductID: item.ProductID,
+			OrderId:   orderId,
+			ProductId: item.ProductId,
 			Quantity:  item.Quantity,
-			Price:     productsMap[item.ProductID].Price,
+			Price:     productsMap[item.ProductId].Price,
 		})
 	}
 
-	return orderID, totalPrice, nil
+	return orderId, totalPrice, nil
 }
