@@ -51,7 +51,7 @@ type OrderItem struct {
 type UserStore interface {
 	GetUserByEmail(email string) (*User, error)
 	GetUserByID(id int) (*User, error)
-	CreateUser(User) error
+	CreateUser(User) (int64, error)
 }
 
 type ProductStore interface {
@@ -88,4 +88,9 @@ type LoginUserPayload struct {
 
 type CartCheckoutPayload struct {
 	Items []CartCheckoutItem `json:"items" validate:"required"`
+}
+
+type RegisterUserResult struct {
+	ID    int64  `json:"id"`
+	Email string `json:"email"`
 }

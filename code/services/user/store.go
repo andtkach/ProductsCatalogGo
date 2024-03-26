@@ -15,13 +15,18 @@ func NewStore(db *sql.DB) *Store {
 	return &Store{db: db}
 }
 
-func (s *Store) CreateUser(user types.User) error {
-	_, err := s.db.Exec("INSERT INTO users (firstName, lastName, email, password) VALUES (?, ?, ?, ?)", user.FirstName, user.LastName, user.Email, user.Password)
+func (s *Store) CreateUser(user types.User) (int64, error) {
+	res, err := s.db.Exec("INSERT INTO users (firstName, lastName, email, password) VALUES (?, ?, ?, ?)", user.FirstName, user.LastName, user.Email, user.Password)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	return nil
+	lid, err := res.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return lid, nil
 }
 
 func (s *Store) GetUserByEmail(email string) (*types.User, error) {

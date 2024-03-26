@@ -2,18 +2,20 @@ version: '3'
 services:
 
   db:
-    image: mysql:8.0
+    container_name: mysqldb
+    image: mysql:latest
     healthcheck:
       test: "exit 0"
     volumes:
-      - db_data:/var/lib/mysql
+      - ../dbdata:/var/lib/mysql
     ports:
       - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: mypassword
-      MYSQL_DATABASE: ecom
+      MYSQL_DATABASE: procagodb
 
   api:
+    container_name: api
     build: 
       context: .
       dockerfile: Dockerfile
@@ -26,7 +28,7 @@ services:
       DB_HOST: db
       DB_USER: root
       DB_PASSWORD: mypassword
-      DB_NAME: ecom
+      DB_NAME: procagodb
     links:
       - db
     depends_on:
