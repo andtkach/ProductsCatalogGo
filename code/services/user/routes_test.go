@@ -60,8 +60,8 @@ func (m *mockUserStore) GetUserByEmail(email string) (*types.User, error) {
 	return &types.User{}, nil
 }
 
-func (m *mockUserStore) CreateUser(u types.User) error {
-	return nil
+func (m *mockUserStore) CreateUser(u types.User) (int64, error) {
+	return 0, nil
 }
 
 func (m *mockUserStore) GetUserByID(id int) (*types.User, error) {
